@@ -6,6 +6,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -44,7 +45,7 @@ public class UploadController {
                 //上传文件项
                 String fileItemName = fileItem.getName();
                 //生成随机标识
-                fileItemName = UUID.randomUUID().toString().replace("-","") + fileItemName;
+                fileItemName = UUID.randomUUID().toString().replace("-", "") + fileItemName;
                 System.out.println(fileItemName);
                 fileItem.write(new File(path, fileItemName));
                 //删除临时文件
@@ -53,4 +54,32 @@ public class UploadController {
         }
         return "success";
     }
+
+    /**
+     * springMVC文件上传
+     *
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/fileUpload01")
+    public String fileUpload01(HttpServletRequest request, MultipartFile upload) throws Exception {
+        String path = request.getSession().getServletContext().getRealPath("/update/");
+        System.out.println(path);
+        File file = new File(path);
+        //判断文件夹是否存在
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        //上传文件项
+        //获取上传文件名称
+        String fileItemName = upload.getOriginalFilename();
+        //生成随机标识
+        fileItemName = UUID.randomUUID().toString().replace("-", "") + fileItemName;
+        System.out.println(fileItemName);
+        //完成文件上传
+        upload.transferTo(new File(path,fileItemName));
+        return "success";
+    }
+
 }
